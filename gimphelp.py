@@ -23,10 +23,10 @@ __all__ = ["proc_help", "help"]
 BASE_DOC_TEMPLATE = "%s\n\n%s\n\n%s"
 PARAM_DOC_TEMPLATE = "\n\nParameters\n----------\n%s"
 RUNMODE_DOC = "run_mode : int, optional\n    the run mode"
-RETURN_DOC_TEMPLAYE = "\n\nReturns\n-------\n%s"
+RETURN_DOC_TEMPLATE = "\n\nReturns\n-------\n%s"
 
-#Used to make sure that each line isn't too wide, break_on_hypens is disabled
-#because it can split constants within the paramaters description
+#Used to make sure that each line isn't too wide, break_on_hyphens is disabled
+#because it can split constants within the parameters description
 textwrapper = textwrap.TextWrapper(64, break_on_hyphens=False)
 
 
@@ -41,10 +41,10 @@ def format_signature(proc):
     line_start = len(proc.proc_name) + 1
     args = ", ".join(param[1].replace("-", "_") for param in params)
     signature = format_str % (proc.proc_name, args)
-    #Set the subsquent indent to have the function parameters line up correctly
-    textwrapper.subsequent_ident = " " * line_start
+    #Set the subsequent indent to have the function parameters line up correctly
+    textwrapper.subsequent_indent = " " * line_start
     wrapped = textwrapper.fill(signature)
-    textwrapper.subsequent_ident = ""
+    textwrapper.subsequent_indent = ""
     return wrapped
 
 
@@ -99,7 +99,7 @@ def proc_help(proc):
     proc_blurb = textwrapper.fill(proc.proc_blurb)
     base_doc = BASE_DOC_TEMPLATE % (signature, proc_blurb, proc_help)
     param_doc = format_params(proc.params, PARAM_DOC_TEMPLATE)
-    return_doc = format_params(proc.return_vals, RETURN_DOC_TEMPLAYE)
+    return_doc = format_params(proc.return_vals, RETURN_DOC_TEMPLATE)
 
     print(base_doc + param_doc + return_doc)
 
