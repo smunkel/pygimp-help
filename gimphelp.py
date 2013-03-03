@@ -29,8 +29,9 @@ RETURN_DOC_TEMPLATE = "\n\nReturns\n-------\n%s"
 # because it can split constants within the parameters description
 textwrapper = textwrap.TextWrapper(64, break_on_hyphens=False)
 
-#
-proc_name = gimp.pdd.query()[0].replace("-", "_")
+# The PDBFunction type doesn't appear to be available otherwise so we must get
+# it here so it can be used in help
+proc_name = gimp.pdb.query()[0].replace("-", "_")
 PDBFunction = type(getattr(gimp.pdb, proc_name))
 del proc_name
 
