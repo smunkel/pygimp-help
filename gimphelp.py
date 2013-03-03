@@ -108,4 +108,4 @@ def help(item):
     if isinstance(item, type(gimp.pdb.plug_in_blur)):
         proc_help(item)
     else:
-        __builtins__.help(item)
+        __builtins__["help"](item)
