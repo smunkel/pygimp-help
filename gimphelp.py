@@ -25,9 +25,14 @@ PARAM_DOC_TEMPLATE = "\n\nParameters\n----------\n%s"
 RUNMODE_DOC = "run_mode : int, optional\n    the run mode"
 RETURN_DOC_TEMPLATE = "\n\nReturns\n-------\n%s"
 
-#Used to make sure that each line isn't too wide, break_on_hyphens is disabled
-#because it can split constants within the parameters description
+# Used to make sure that each line isn't too wide, break_on_hyphens is disabled
+# because it can split constants within the parameters description
 textwrapper = textwrap.TextWrapper(64, break_on_hyphens=False)
+
+#
+proc_name = gimp.pdd.query()[0].replace("-", "_")
+PDBFunction = type(getattr(gimp.pdb, proc_name))
+del proc_name
 
 
 def _format_signature(proc):
@@ -41,7 +46,8 @@ def _format_signature(proc):
     line_start = len(proc.proc_name) + 1
     args = ", ".join(param[1].replace("-", "_") for param in params)
     signature = format_str % (proc.proc_name, args)
-    #Set the subsequent indent to have the function parameters line up correctly
+    # Set the subsequent indent to have the function parameters line up
+    # correctly
     textwrapper.subsequent_indent = " " * line_start
     wrapped = textwrapper.fill(signature)
     textwrapper.subsequent_indent = ""
@@ -105,7 +111,7 @@ def proc_help(proc):
 
 
 def help(item):
-    if isinstance(item, type(gimp.pdb.plug_in_blur)):
+    if isinstance(item, PDBFunction):
         proc_help(item)
     else:
         __builtins__["help"](item)
