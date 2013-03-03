@@ -9,6 +9,7 @@ automatically generate documentation for a gimp.PDBFunction.
 To use simply import help from this function in gimp's python console:
     from gimphelp import help
 """
+import re
 import textwrap
 import gimp
 from gimpfu import _obj_mapping
@@ -17,7 +18,7 @@ from gimpfu import _obj_mapping
 __author__ = "Sean Munkel"
 __copyright__ = "Copyright 2013, Sean Munkel"
 __license__ = "MIT"
-__version__ = "0.2"
+__version__ = "0.3"
 __all__ = ["proc_help", "help"]
 
 BASE_DOC_TEMPLATE = "%s\n\n%s\n\n%s"
@@ -34,6 +35,15 @@ textwrapper = textwrap.TextWrapper(64, break_on_hyphens=False)
 proc_name = gimp.pdb.query()[0].replace("-", "_")
 PDBFunction = type(getattr(gimp.pdb, proc_name))
 del proc_name
+
+# Regular expression used to check if a parameter is really a boolean rather
+# than an integer. This takes into account different types of seperators,
+# brackets/parens, ordering, as well as specifying the integer value.
+bool_re = re.compile(" [\({]? ?"
+                     "((?P<ft>TRUE( \(1\))?)|(FALSE( \(0\))?))"
+                     "((, )|( or )|/)"
+                     "(?(ft)FALSE( \(0\))?|TRUE( \(1\))?)"
+                     " ?[\)}]?")
 
 
 def _format_signature(proc):
@@ -78,10 +88,11 @@ def _format_params(params, template):
         # documentation if they are both valid and useful.
         if param_type in _obj_mapping:
             type_name = " : " + _obj_mapping[param_type].__name__
-            if type_name == "int" and param_desc.endswith("{ TRUE, FALSE }"):
-                type_name = "bool"
-                #Remove the { TRUE, FALSE } part of the description
-                param_desc = param_desc[:-16]
+            match = bool_re.search(param_desc)
+            if type_name == " : int" and match is not None:
+                type_name = ": bool"
+                # Remove the boolean notation from the description
+                param_desc = bool_re.sub("", param_desc)
             param_items.insert(1, type_name)
         if param_desc != "":
             param_desc = textwrapper.fill(param_desc) + "\n"
