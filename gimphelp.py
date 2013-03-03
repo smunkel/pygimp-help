@@ -30,7 +30,7 @@ RETURN_DOC_TEMPLATE = "\n\nReturns\n-------\n%s"
 textwrapper = textwrap.TextWrapper(64, break_on_hyphens=False)
 
 
-def format_signature(proc):
+def _format_signature(proc):
     if proc.nparams > 0 and proc.params[0][1] == "run-mode":
         format_str = "%s(%s, run_mode=RUN_INTERACTIVE)"
         params = proc.params[1:]
@@ -48,7 +48,7 @@ def format_signature(proc):
     return wrapped
 
 
-def format_params(params, template):
+def _format_params(params, template):
     if len(params) == 0:
         return ""
 
@@ -94,12 +94,12 @@ def format_params(params, template):
 
 def proc_help(proc):
     """ Returns a docstring for a gimp procedure. """
-    signature = format_signature(proc)
+    signature = _format_signature(proc)
     proc_help = textwrapper.fill(proc.proc_help)
     proc_blurb = textwrapper.fill(proc.proc_blurb)
     base_doc = BASE_DOC_TEMPLATE % (signature, proc_blurb, proc_help)
-    param_doc = format_params(proc.params, PARAM_DOC_TEMPLATE)
-    return_doc = format_params(proc.return_vals, RETURN_DOC_TEMPLATE)
+    param_doc = _format_params(proc.params, PARAM_DOC_TEMPLATE)
+    return_doc = _format_params(proc.return_vals, RETURN_DOC_TEMPLATE)
 
     print(base_doc + param_doc + return_doc)
 
