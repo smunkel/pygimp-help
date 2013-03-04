@@ -9,32 +9,30 @@ automatically generate documentation for a gimp.PDBFunction.
 To use simply import help from this function in gimp's python console:
     from gimphelp import help
 """
+__author__ = "Sean Munkel"
+__copyright__ = "Copyright 2013, Sean Munkel"
+__license__ = "MIT"
+__version__ = "0.3.1"
+__all__ = ["proc_help", "help"]
+
 import re
 import textwrap
 import gimp
 from gimpfu import _obj_mapping
 
-
-__author__ = "Sean Munkel"
-__copyright__ = "Copyright 2013, Sean Munkel"
-__license__ = "MIT"
-__version__ = "0.3"
-__all__ = ["proc_help", "help"]
-
 BASE_DOC_TEMPLATE = "%s\n\n%s\n\n%s"
 PARAM_DOC_TEMPLATE = "\n\nParameters\n----------\n%s"
-RUNMODE_DOC = "run_mode : int, optional\n    the run mode"
+RUNMODE_DOC = """run_mode : int, optional
+    the run mode, RUN_INTERACTIVE or RUN_NONINTERACTIVE"""
 RETURN_DOC_TEMPLATE = "\n\nReturns\n-------\n%s"
 
 # Used to make sure that each line isn't too wide, break_on_hyphens is disabled
 # because it can split constants within the parameters description
 textwrapper = textwrap.TextWrapper(64, break_on_hyphens=False)
 
-# The PDBFunction type doesn't appear to be available otherwise so we must get
-# it here so it can be used in help
-proc_name = gimp.pdb.query()[0].replace("-", "_")
-PDBFunction = type(getattr(gimp.pdb, proc_name))
-del proc_name
+# This can't be set to the correct value on start up because GIMP will not
+# properly handle it at that time.
+PDBFunction = None
 
 # Regular expression used to check if a parameter is really a boolean rather
 # than an integer. This takes into account different types of seperators,
@@ -119,10 +117,14 @@ def proc_help(proc):
     param_doc = _format_params(proc.params, PARAM_DOC_TEMPLATE)
     return_doc = _format_params(proc.return_vals, RETURN_DOC_TEMPLATE)
 
-    print(base_doc + param_doc + return_doc)
+    print (base_doc + param_doc + return_doc).rstrip()
 
 
 def help(item):
+    global PDBFunction
+    if PDBFunction is None:
+        proc_name = gimp.pdb.query()[0].replace("-", "_")
+        PDBFunction = type(getattr(gimp.pdb, proc_name))
     if isinstance(item, PDBFunction):
         proc_help(item)
     else:
