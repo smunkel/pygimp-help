@@ -23,8 +23,8 @@ from gimpfu import _obj_mapping
 BASE_DOC_TEMPLATE = "%s\n\n%s\n\n%s"
 PARAM_DOC_TEMPLATE = "\n\nParameters\n----------\n%s"
 RUNMODE_DOC = """run_mode : int, optional
-    the run mode, RUN_INTERACTIVE or RUN_NONINTERACTIVE"""
-RETURN_DOC_TEMPLATE = "\n\nReturns\n-------\n%s"
+    the run mode, RUN_INTERACTIVE or RUN_NONINTERACTIVE\n"""
+RETURN_DOC_TEMPLATE = "\nReturns\n-------\n%s"
 
 # Used to make sure that each line isn't too wide, break_on_hyphens is disabled
 # because it can split constants within the parameters description
